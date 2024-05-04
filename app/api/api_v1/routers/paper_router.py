@@ -1,16 +1,33 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
-from ..services.paper_service import
+from typing import List
 
-router = APIRouter()
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from app.api.api_v1.pipeline.data_loarder import DataLoader
 
-@router.post("/process_plain_text_file/")
-async def process_plain_text_file(file: UploadFile = File(...)):
+paper_router = APIRouter()
+
+@paper_router.post("/process_plain_text_file/")
+async def process_plain_text_file(
+    txt: UploadFile = File(...),
+    fields: str = Form(''),
+    start_index: int = Form(0),
+    page_size: int = Form(10)
+):
+    if fields:
+        fields = fields.split(', ')
+
+    result = {}
+
     # Make sure the type of file is txt
-    if not file.filename.endswith(".txt"):
+    if not txt.filename.endswith(".txt"):
         raise HTTPException(status_code=400, detail="Invalid file type. Only .txt files are accepted.")
 
-    content = await file.read()
-    # 处理文件内容
-    processed_content = (content)  # 假设你有一个函数来处理文件内容
+    # 异步读取
+    papers = await txt.read()
+    # 将内容转换为字符串
+    papers = papers.decode("utf-8")
 
-    return {"filename": file.filename, "content": processed_content}
+    data_loader = DataLoader(papers, fields)
+    for i in range(start_index, start_index + page_size):
+        result[i] = data_loader[i].to_dict()
+
+    return result

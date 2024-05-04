@@ -2,7 +2,7 @@ from abc import ABC
 
 import torch.nn as nn
 import torch
-from transformers import RobertaModel, RobertaConfig
+from transformers import RobertaModel, RobertaConfig, RobertaTokenizer
 from torch_geometric.nn.conv import GATConv
 
 
@@ -66,9 +66,10 @@ class RobertaGAT(nn.Module):
 
 
 def load_model():
+    tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
     model = RobertaGAT(roberta_model_name="roberta-base", num_classes=5)
     model.load_state_dict(
-        torch.load(r'C:\Users\AI\IdeaProjects\dlut-research-service\src\main\flask\model\RoBERTaGAT\model.pth',
-                   map_location='cuda:0'), strict=False)
+        torch.load(r'C:\Users\AI\PycharmProjects\backend\app\model\robert_gat\model.pth',
+                   map_location='cpu'), strict=False)
     model.eval()
-    return model
+    return model, tokenizer
