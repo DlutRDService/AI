@@ -1,11 +1,10 @@
-from typing import List
-
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from app.api.api_v1.pipeline.data_loarder import DataLoader
+from app.api.api_v1.pipeline.data_loader import DataLoader
 
-paper_router = APIRouter()
+patent_router = APIRouter()
 
-@paper_router.post("/process_plain_text_file/")
+
+@patent_router.post("/process_plain_text_file/")
 async def process_plain_text_file(
     txt: UploadFile = File(...),
     fields: str = Form(''),
